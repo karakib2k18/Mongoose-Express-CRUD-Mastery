@@ -1,11 +1,3 @@
 node_modules
 dist
 .env
-# Ignore node_modules directory
-node_modules/
-
-# Ignore the dist directory
-dist/
-
-# Ignore environment files
-.env
