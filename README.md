@@ -70,7 +70,7 @@ ts-node-dev --respawn --transpile-only src/server.ts
 // .env file for developemnt
 NODE_ENV= development
 PORT=5000
-DATABASE_URL= mongodb+srv://admin:admin@cluster0.rp8qrq9.mongodb.net/?retryWrites=true&w=majority
+DATABASE_URL=
 ```
 
 **Objective:** Develop a Node.js Express application with TypeScript as the programming language, integrating MongoDB with Mongoose for user data and order management. Ensure data integrity through validation using Joi/Zod.
