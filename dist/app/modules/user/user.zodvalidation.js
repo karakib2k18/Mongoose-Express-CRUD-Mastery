@@ -20,7 +20,7 @@ exports.orderValidationSchema = orderValidationSchema;
 const userValidationSchema = zod_1.z.object({
     userId: zod_1.z.number(),
     username: zod_1.z.string().min(1).max(50),
-    password: zod_1.z.string(),
+    password: zod_1.z.string(), // Adjust the minimum length as needed
     fullName: fullNameValidationSchema,
     age: zod_1.z.number().min(18).max(99),
     email: zod_1.z.string().email(),

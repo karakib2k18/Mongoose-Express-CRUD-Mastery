@@ -14,6 +14,6 @@ app.use((0, cors_1.default)());
 // Routes
 app.use('/api/users/', user_router_1.UserRoutes);
 app.get('/', (req, res) => {
-    res.send('Hello World!');
+    res.send('Hello World! # Mongoose-Express-CRUD-Mastery');
 });
 exports.default = app;

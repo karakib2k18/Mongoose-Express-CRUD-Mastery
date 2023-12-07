@@ -63,7 +63,7 @@ const getAllUsers = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
         const users = yield user_model_1.UserModel.aggregate([
             {
                 $project: {
-                    _id: 0,
+                    _id: 0, // Exclude _id field
                     username: 1,
                     fullName: 1,
                     age: 1,

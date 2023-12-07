@@ -1,4 +1,4 @@
-# Mongoose Express CRUD Mastery
+# Mongoose-Express-CRUD-Mastery
 
 ## clone the code and install this=>
 
