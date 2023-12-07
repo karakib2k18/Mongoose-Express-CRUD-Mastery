@@ -1,6 +1,5 @@
 import { IUser } from './user.interface';
 import { UserModel } from './user.model';
-import mongoose from 'mongoose';
 
 const createUserIntoDB = async (validatedData: IUser) => {
   const result = await UserModel.create(validatedData);
@@ -46,7 +45,6 @@ const getAllOrders = async (userId: number) => {
 
 const calculateTotalPrice = async (userId: number) => {
   const user = await UserModel.findOne({ userId });
-  console.log(user);
   if (user) {
     const totalPrice = user?.orders?.reduce(
       (total, order) => total + order.price * order.quantity,
