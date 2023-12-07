@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable no-unused-vars */
 import { Request, Response } from 'express';
 
 import { UserServices } from './user.service';
@@ -10,10 +12,14 @@ import { UserModel } from './user.model';
 const createUser = async (req: Request, res: Response) => {
   const validatedData = userValidationSchema.parse(req.body);
   const result = await UserModel.create(validatedData);
+
+  // Exclude the password field from the response
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const { password, ...userWithoutPassword } = result.toObject();
   res.status(200).json({
     success: true,
     message: 'User created successfully!',
-    data: result,
+    data: userWithoutPassword,
   });
   try {
     const validatedData = userValidationSchema.parse(req.body);
@@ -38,12 +44,26 @@ const createUser = async (req: Request, res: Response) => {
 
 const getAllUsers = async (req: Request, res: Response) => {
   try {
-    const users = await UserServices.getAllUsers();
+    // Use aggregation to select specific fields
+    const users = await UserModel.aggregate([
+      {
+        $project: {
+          _id: 0, // Exclude _id field
+          username: 1,
+          fullName: 1,
+          age: 1,
+          email: 1,
+          address: 1,
+        },
+      },
+    ]);
+
     res.json({
       success: true,
       message: 'Users fetched successfully!',
       data: users,
     });
+
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
     res.status(500).json({
@@ -62,10 +82,11 @@ const getUserById = async (req: Request, res: Response) => {
     const userId = parseInt(req.params.userId, 10);
     const user = await UserServices.getUserById(userId);
     if (user) {
+      const { orders, _id, password, ...userWithoutPassword } = user.toObject();
       res.json({
         success: true,
         message: 'User fetched successfully!',
-        data: user,
+        data: userWithoutPassword,
       });
     } else {
       res.status(404).json({
@@ -96,19 +117,33 @@ const updateUser = async (req: Request, res: Response) => {
     const validatedData = userValidationSchema.parse(req.body);
     const updatedUser = await UserServices.updateUser(userId, validatedData);
 
-    if (updatedUser) {
-      res.json({
-        success: true,
-        message: 'User updated successfully!',
-        data: updatedUser,
-      });
+    if (updatedUser.modifiedCount) {
+      const user = await UserServices.getUserById(userId);
+      if (user) {
+        const { orders, _id, password, ...userWithoutPassword } =
+          user.toObject();
+        res.json({
+          success: true,
+          message: 'User updated successfully!',
+          data: userWithoutPassword,
+        });
+      } else {
+        res.status(404).json({
+          success: false,
+          message: 'User not found',
+          error: {
+            code: 404,
+            description: 'User not found!',
+          },
+        });
+      }
     } else {
       res.status(404).json({
         success: false,
-        message: 'User not found',
+        message: 'User not found or not modified',
         error: {
           code: 404,
-          description: 'User not found!',
+          description: 'User not found or not modified!',
         },
       });
     }
@@ -129,13 +164,25 @@ const updateUser = async (req: Request, res: Response) => {
 const deleteUser = async (req: Request, res: Response) => {
   try {
     const userId = parseInt(req.params.userId, 10);
-    await UserServices.deleteUser(userId);
-    res.json({
-      success: true,
-      message: 'User deleted successfully!',
-      data: null,
-    });
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const user = await UserServices.getUserById(userId);
+
+    if (user) {
+      await UserServices.deleteUser(userId);
+      res.json({
+        success: true,
+        message: 'User deleted successfully!',
+        data: null,
+      });
+    } else {
+      res.status(404).json({
+        success: false,
+        message: 'user not found',
+        error: {
+          code: 404,
+          description: 'user not found!',
+        },
+      });
+    }
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
     res.status(500).json({

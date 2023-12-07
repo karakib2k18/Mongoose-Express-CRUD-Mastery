@@ -30,21 +30,23 @@ const deleteUser = async (userId: number) => {
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const addOrder = async (userId: number, orderData: any) => {
-  const user = await UserModel.findById(userId);
+  const user = await UserModel.findOne({ userId });
 
   if (user) {
     user?.orders?.push(orderData);
     await user.save();
   }
+  return user;
 };
 
 const getAllOrders = async (userId: number) => {
-  const user = await UserModel.findOne(userId);
+  const user = await UserModel.findOne({ userId });
   return user ? user.orders : [];
 };
 
 const calculateTotalPrice = async (userId: number) => {
-  const user = await UserModel.findById(userId);
+  const user = await UserModel.findOne({ userId });
+  console.log(user);
   if (user) {
     const totalPrice = user?.orders?.reduce(
       (total, order) => total + order.price * order.quantity,
