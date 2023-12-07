@@ -1,5 +1,78 @@
 # Mongoose Express CRUD Mastery
 
+## clone the code and install this=>
+
+1. express
+2. mongose
+3. typescript
+4. cors
+5. dotenv to access environment virable
+
+```js
+npm init -y
+npm install express
+npm install mongodb
+npm i dotenv
+npm install mongoose --save
+npm install typescript --save-dev
+npm i cors
+tsc -init
+npm i --save-dev @types/express
+npm i --save-dev @types/cors
+```
+
+```bash
+//then to to the tsconfig.json
+//find the rootdir and write: "rootDir": "./src",
+//find the outdir and write: "outDir": "./dist",
+//then open a file src and make a file app.ts in this file
+//go to the package.json and write "build": "tsc" in scripts.
+```
+
+```js
+//then do this for create dist file for js
+npm run build
+//then run js code
+node ./dist/app.js
+```
+
+```js
+//then go to the mongoDB atlas and create a database in Connecting with MongoDB Driver and copy this 3. Add your connection string into your application code then save it in .env file
+
+PORT = 5000
+DATABASE_URL = write your database url here
+```
+
+```js
+npm run build
+```
+
+```js
+// first npm run build, then do node ./dist/server.js, its so boring, so we will write a snipted to do this easily
+
+//now isntall ts-node-dev => for making development faster
+npm i ts-node-dev
+npm i ts-node-dev --save-dev
+
+//auto response and making transparent
+ts-node-dev --respawn --transpile-only src/server.ts
+```
+
+```js
+//in package.json
+"scripts": {
+    "start:prod": "node ./dist/server.js",
+    "start:dev": "ts-node-dev --respawn --transpile-only src/server.ts",
+    "build": "tsc",
+```
+
+```js
+// .env file for developemnt
+NODE_ENV= development
+PORT=5000
+DATABASE_URL= mongodb+srv://admin:admin@cluster0.rp8qrq9.mongodb.net/?retryWrites=true&w=majority
+```
+
 **Objective:** Develop a Node.js Express application with TypeScript as the programming language, integrating MongoDB with Mongoose for user data and order management. Ensure data integrity through validation using Joi/Zod.
 
 ### Set up the Project
