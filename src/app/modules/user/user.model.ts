@@ -1,5 +1,7 @@
 import { Schema, model } from 'mongoose';
 import { IUser, IFullName, IAddress, IOrder } from './user.interface';
+import config from '../../config';
+import bcrypt from 'bcrypt';
 
 // Schema for user's full name
 const FullNameSchema = new Schema<IFullName>({
@@ -41,6 +43,24 @@ const UserSchema = new Schema<IUser>({
   hobbies: { type: [String], default: [] },
   address: { type: AddressSchema, required: [true, 'Address is required'] },
   orders: { type: [OrderSchema], default: [] },
+});
+
+//Encrypt & pre save middleware/hook: will work on create on save function
+UserSchema.pre('save', async function (next) {
+  // eslint-disable-next-line @typescript-eslint/no-this-alias
+  const user = this; // documents
+  user.password = await bcrypt.hash(
+    user.password,
+    Number(config.bycrypt_salt_rounds),
+  );
+
+  next();
+});
+
+//post save middleware
+UserSchema.post('save', function (doc, next) {
+  doc.password = '';
+  next();
 });
 
 // Create the user model
