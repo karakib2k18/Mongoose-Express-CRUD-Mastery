@@ -10,24 +10,14 @@ import {
 import { UserModel } from './user.model';
 
 const createUser = async (req: Request, res: Response) => {
-  const validatedData = userValidationSchema.parse(req.body);
-  const result = await UserModel.create(validatedData);
-
-  // Exclude the password field from the response
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const { password, ...userWithoutPassword } = result.toObject();
-  res.status(200).json({
-    success: true,
-    message: 'User created successfully!',
-    data: userWithoutPassword,
-  });
   try {
     const validatedData = userValidationSchema.parse(req.body);
     const newUser = await UserServices.createUserIntoDB(validatedData);
+    const { password, ...userWithoutPassword } = newUser.toObject();
     res.status(200).json({
       success: true,
       message: 'User created successfully!',
-      data: newUser,
+      data: userWithoutPassword,
     });
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
@@ -113,15 +103,16 @@ const getUserById = async (req: Request, res: Response) => {
 
 const updateUser = async (req: Request, res: Response) => {
   try {
-    const userId = parseInt(req.params.userId, 10);
-    const validatedData = userValidationSchema.parse(req.body);
-    const updatedUser = await UserServices.updateUser(userId, validatedData);
+    const userId = parseInt(req.params.userId, 10) ?? 0; // Providing 0 as a default value if userId is undefined
+    const myData = req.body;
+    const updatedUser = await UserServices.updateUser(userId, myData);
 
-    if (updatedUser.modifiedCount) {
+    if (updatedUser.modifiedCount > 0) {
       const user = await UserServices.getUserById(userId);
       if (user) {
         const { orders, _id, password, ...userWithoutPassword } =
           user.toObject();
+        // const { orders, _id, ...userWithoutPassword } = user.toObject();
         res.json({
           success: true,
           message: 'User updated successfully!',

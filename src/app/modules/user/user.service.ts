@@ -1,8 +1,11 @@
+import config from '../../config';
 import { IUser } from './user.interface';
 import { UserModel } from './user.model';
+import bcrypt from 'bcrypt';
 
 const createUserIntoDB = async (validatedData: IUser) => {
   const result = await UserModel.create(validatedData);
+
   return result;
 };
 
@@ -16,10 +19,17 @@ const getUserById = async (userId: number) => {
   return userID;
 };
 
-const updateUser = async (userId: number, userData: IUser) => {
-  const updatedUser = await UserModel.updateOne({ userId }, userData, {
-    new: true,
-  });
+const updateUser = async (userId: number, userData: Partial<IUser>) => {
+  // Check if a new password is provided
+  if (userData.password) {
+    // Hash the new password
+    userData.password = await bcrypt.hash(
+      userData.password,
+      Number(config.bycrypt_salt_rounds),
+    );
+  }
+
+  const updatedUser = await UserModel.updateOne({ userId }, userData);
   return updatedUser;
 };
 
